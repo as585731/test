@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.mapper.UserMapper">
+    <!--公用的查询语句-->
+    <sql id="selectUser">
+        select * from USER
+    </sql>
+    <!-- 根据ID 查询一条数据 返回user对象-->
+    <select id="selectOneById" parameterType="integer" resultType="user">
+        <include refid="selectUser"/>
+         <if test="id!=null and id!=''">
+             and id=#{id}
+         </if>
+
+    </select>
+    <!-- 根据username模糊查询多条数据，返回user对象的list集合-->
+    <select id="selectAllByName" parameterType="string" resultType="user">
+        <include refid="selectUser"/>
+        where username like #{name}
+    </select>
+    <!-- 添加一条数据-->
+    <insert id="insertUser" parameterType="user" >
+        insert into user VALUES (#{id},#{username},#{birthday},#{sex},#{address})
+    </insert>
+    <!-- 修改一条数据-->
+    <update id="updataUser" parameterType="user">
+        UPDATE user set username=#{username},birthday=#{birthday},sex=#{sex},address=#{address} where id=#{id}
+    </update>
+    <!-- 删除一条数据-->
+    <delete id="deleteById" parameterType="integer">
+        DELETE FROM user where id=#{id}
+    </delete>
+    <!--添加数据并返回自增的id-->
+    <insert id="insertUserById" parameterType="user" useGeneratedKeys="true" keyColumn="id" keyProperty="id" >
+        insert into user VALUES (#{id},#{username},#{birthday},#{sex},#{address})
+    </insert>
+    <!-- 传递包装数据类型-->
+    <select id="selectUserByQueryVo" parameterType="QueryVo" resultType="user" >
+        <include refid="selectUser"/>
+        where id=#{user.id}
+    </select>
+
+    <!-- 返回map数据类型-->
+    <select id="selectMapById" parameterType="integer" resultType="map">
+        <include refid="selectUser"/>
+        where id=#{id}
+    </select>
+    <!-- 传递map数据类型，根据username模糊查询-->
+    <select id="selectUserByMapName" parameterType="map" resultType="user">
+        <include refid="selectUser"/>
+        <where>
+            <if test="username !=null and username !=''">
+                and username like #{username}
+            </if>
+        </where>
+
+    </select>
+    <!-- 传递Map数据类型 根据ID查询-->
+    <select id="selectUserByMapId" parameterType="map" resultType="user">
+        <include refid="selectUser"/>
+        <where>
+            <if test="id !=null and id !=''">
+                AND id=#{id}
+            </if>
+        </where>
+    </select>
+    <!-- 传递list数据类型，返回user-->
+    <select id="selectUserByList" parameterType="list" resultType="user">
+        <include refid="selectUser"/>
+        <where>
+          <if test="list != null and list.size>0">
+              <foreach collection="list" item="id" open="id in(" separator="," close=")">
+                  #{id}
+              </foreach>
+          </if>
+        </where>
+    </select>
+    <!--传递queryVo对象里的list类型，返回user-->
+    <select id="selectUserByQueryVoList" parameterType="QueryVo" resultType="user">
+        <include refid="selectUser"/>
+        <where>
+            <if test="ids!=null and ids.size>0">
+                <foreach collection="ids" item="id" open="id in(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+</mapper>
